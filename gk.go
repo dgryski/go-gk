@@ -75,7 +75,7 @@ func (s *Stream) Query(q float64) float64 {
 
 	var rmin int
 
-	for elt := s.summary.head.next[0]; elt.next[0] != nil; elt = elt.next[0] {
+	for elt := s.summary.head.next[0]; elt != nil; elt = elt.next[0] {
 
 		t := elt.value
 
