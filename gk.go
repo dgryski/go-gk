@@ -1,7 +1,19 @@
+// Package gk implmements Greenwald/Khanna's streaming quantiles
+/*
+
+"Space-Efficient Online Computation of Quantile Summaries" (Greenwald, Khanna 2001)
+
+http://infolab.stanford.edu/~datar/courses/cs361a/papers/quantiles.pdf
+
+This implementation is backed by a skiplist to make inserting elements into the
+summary faster.  Querying is still O(n).
+
+*/
 package gk
 
 import "math"
 
+// Stream is a quantile summary
 type Stream struct {
 	summary *skiplist
 	epsilon float64
@@ -14,6 +26,7 @@ type tuple struct {
 	delta int
 }
 
+// New returns a new stream with accuracy epsilon (0 <= epsilon <= 1)
 func New(epsilon float64) *Stream {
 	return &Stream{
 		epsilon: epsilon,
@@ -21,6 +34,7 @@ func New(epsilon float64) *Stream {
 	}
 }
 
+// Insert inserts an item into the quantile summary
 func (s *Stream) Insert(v float64) {
 
 	value := tuple{v, 1, 0}
@@ -52,6 +66,7 @@ func (s *Stream) compress() {
 	}
 }
 
+// Query returns an epsilon estimate of the element at quantile 'q' (0 <= q <= 1)
 func (s *Stream) Query(q float64) float64 {
 
 	// convert quantile to rank
