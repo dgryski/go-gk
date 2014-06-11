@@ -2,7 +2,7 @@ package gk
 
 import "math"
 
-type GKStream struct {
+type Stream struct {
 	summary *skiplist
 	epsilon float64
 	n       int
@@ -14,14 +14,14 @@ type tuple struct {
 	delta int
 }
 
-func NewGK(epsilon float64) *GKStream {
-	return &GKStream{
+func New(epsilon float64) *Stream {
+	return &Stream{
 		epsilon: epsilon,
 		summary: newSkiplist(),
 	}
 }
 
-func (s *GKStream) Insert(v float64) {
+func (s *Stream) Insert(v float64) {
 
 	value := tuple{v, 1, 0}
 
@@ -38,7 +38,7 @@ func (s *GKStream) Insert(v float64) {
 	}
 }
 
-func (s *GKStream) compress() {
+func (s *Stream) compress() {
 
 	for elt := s.summary.head.next[0]; elt != nil && elt.next[0] != nil; {
 		next := elt.next[0]
@@ -52,7 +52,7 @@ func (s *GKStream) compress() {
 	}
 }
 
-func (s *GKStream) Query(q float64) float64 {
+func (s *Stream) Query(q float64) float64 {
 
 	// convert quantile to rank
 
