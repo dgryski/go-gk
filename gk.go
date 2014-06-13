@@ -71,7 +71,7 @@ func (s *Stream) Query(q float64) float64 {
 
 	// convert quantile to rank
 
-	r := int(q * float64(s.n))
+	r := int(q*float64(s.n) + 0.5)
 
 	var rmin int
 
