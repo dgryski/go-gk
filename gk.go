@@ -11,8 +11,6 @@ summary faster.  Querying is still O(n).
 */
 package gk
 
-import "math"
-
 // Stream is a quantile summary
 type Stream struct {
 	summary *skiplist
@@ -54,13 +52,28 @@ func (s *Stream) Insert(v float64) {
 
 func (s *Stream) compress() {
 
+	var missing int
+
+	epsN := int(2 * s.epsilon * float64(s.n))
+
 	for elt := s.summary.head.next[0]; elt != nil && elt.next[0] != nil; {
 		next := elt.next[0]
 		t := elt.value
 		nt := &next.value
-		if t.g+nt.g+nt.delta <= int(math.Floor(2*s.epsilon*float64(s.n))) {
-			nt.g += t.g
+
+		// value merging
+		if t.v == nt.v {
+			missing += nt.g
+			nt.delta += missing
+			nt.g = t.g
 			s.summary.Remove(elt)
+		} else if t.g+nt.g+missing+nt.delta < epsN {
+			nt.g += t.g + missing
+			missing = 0
+			s.summary.Remove(elt)
+		} else {
+			nt.g += missing
+			missing = 0
 		}
 		elt = next
 	}
@@ -75,19 +88,29 @@ func (s *Stream) Query(q float64) float64 {
 
 	var rmin int
 
+	epsN := int(s.epsilon * float64(s.n))
+
 	for elt := s.summary.head.next[0]; elt != nil; elt = elt.next[0] {
 
 		t := elt.value
 
 		rmin += t.g
-		rmax := rmin + t.delta
 
-		if r-rmin <= int(s.epsilon*float64(s.n)) && rmax-r <= int(s.epsilon*float64(s.n)) {
+		n := elt.next[0]
+
+		if n == nil {
 			return t.v
+		}
+
+		if r+epsN < rmin+n.value.g+n.value.delta {
+
+			if r+epsN < rmin+n.value.g {
+				return t.v
+			}
+
+			return n.value.v
 		}
 	}
 
-	// panic("not reached")
-
-	return 0
+	panic("not reached")
 }
