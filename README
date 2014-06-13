@@ -1,3 +1,5 @@
-Greenwald-Khanna streaming quantiles.
+Optimized Greenwald-Khanna streaming quantiles.
+
+On my laptop, this processes numbers at a rate of 1.2 seconds per million numbers.
 
 Godoc: http://godoc.org/github.com/dgryski/go-gk
