@@ -41,12 +41,12 @@ func (s *Stream) Insert(v float64) {
 
 	elt := s.summary.Insert(value)
 
+	s.n++
+
 	if elt.prev[0] != s.summary.head && elt.next[0] != nil {
-		//elt.value.delta = int(math.Floor(2 * s.epsilon * float64(s.n)))
-		elt.value.delta = elt.next[0].value.g + elt.next[0].value.delta - 1
+		elt.value.delta = int(2 * s.epsilon * float64(s.n))
 	}
 
-	s.n++
 	if s.n%int(1.0/float64(2.0*s.epsilon)) == 0 {
 		s.compress()
 	}
