@@ -13,7 +13,7 @@ type Exact struct {
 	keys f64bits
 }
 
-// New returns a new exact quantile summary
+// NewExact returns a new exact quantile summary
 func NewExact() *Exact {
 	return &Exact{
 		summary: make(map[uint64]int),
