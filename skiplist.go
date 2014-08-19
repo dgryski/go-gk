@@ -1,12 +1,16 @@
 package gk
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 const maxHeight = 31
 
 type skiplist struct {
 	height int
 	head   *node
+	rnd    *rand.Rand
 }
 
 type node struct {
@@ -19,13 +23,14 @@ func newSkiplist() *skiplist {
 	return &skiplist{
 		height: 0,
 		head:   &node{next: make([]*node, maxHeight)},
+		rnd:    rand.New(rand.NewSource(time.Now().UnixNano())),
 	}
 }
 
 func (s *skiplist) Insert(t tuple) *node {
 	level := 0
 
-	n := rand.Int31()
+	n := s.rnd.Int31()
 	for n&1 == 1 {
 		level++
 		n >>= 1
